@@ -9,7 +9,7 @@ import { MessageService } from '../message.service';
 import { of } from 'rxjs';
 
 
-fdescribe('AlertButtonComponent', () => {
+describe('AlertButtonComponent', () => {
   let component: AlertButtonComponent;
   let fixture: ComponentFixture<AlertButtonComponent>;
   let de: DebugElement;
