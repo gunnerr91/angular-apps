@@ -6,6 +6,7 @@ import {
   flushMicrotasks,
   TestBed,
   tick,
+  waitForAsync,
 } from "@angular/core/testing";
 import { CoursesModule } from "../courses.module";
 import { DebugElement } from "@angular/core";
@@ -24,7 +25,7 @@ import { of } from "rxjs";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { click } from "../common/test-utils";
 
-fdescribe("dummy tests to try out async behavior with jasmine", () => {
+describe("dummy tests to try out async behavior with jasmine", () => {
   it("boolean flag returns true using jasmine done", (done) => {
     let test = false;
 
@@ -58,7 +59,7 @@ fdescribe("dummy tests to try out async behavior with jasmine", () => {
   }));
 });
 
-describe("HomeComponent", () => {
+fdescribe("HomeComponent", () => {
   let fixture: ComponentFixture<HomeComponent>;
   let component: HomeComponent;
   let el: DebugElement;
@@ -125,7 +126,7 @@ describe("HomeComponent", () => {
     expect(tabs.length).toBe(2);
   });
 
-  it("should display advanced courses when tab clicked", () => {
+  it("should display advanced courses when tab clicked - fakeAsync", fakeAsync(() => {
     coursesService.findAllCourses.and.returnValue(of(allCourses));
 
     fixture.detectChanges();
@@ -136,7 +137,29 @@ describe("HomeComponent", () => {
 
     fixture.detectChanges();
 
-    const titles = el.queryAll(By.css(".mat-card-title"));
+    flush();
+
+    const titles = el.queryAll(By.css(".mat-tab-body-active .mat-card-title"));
+
+    expect(titles.length).not.toBe(0);
+
+    expect(titles[0].nativeElement.textContent).toContain("Security");
+  }));
+
+  it("should display advanced courses when tab clicked - async", async () => {
+    coursesService.findAllCourses.and.returnValue(of(allCourses));
+
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css(".mat-tab-label"));
+
+    click(tabs[1]);
+
+    fixture.detectChanges();
+
+    await fixture.whenStable();
+
+    const titles = el.queryAll(By.css(".mat-tab-body-active .mat-card-title"));
 
     expect(titles.length).not.toBe(0);
 
